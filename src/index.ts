@@ -231,10 +231,15 @@ export class MyMCP extends McpAgent {
 						page++;
 					}
 
-					// Format the results - only ID, title, and state
+					// Format the results - include ID, title, state, and body
 					const formattedIssues = allIssues
-						.map((issue) => `#${issue.number}: ${issue.title} [${issue.state}]`)
-						.join("\n");
+						.map((issue) => {
+							const body = issue.body ? issue.body.trim() : "(No description)";
+							const truncatedBody =
+								body.length > 200 ? body.substring(0, 200) + "..." : body;
+							return `#${issue.number}: ${issue.title} [${issue.state}]\n   ${truncatedBody.replace(/\n/g, " ")}`;
+						})
+						.join("\n\n");
 
 					// Build pagination info
 					let paginationInfo = "";
