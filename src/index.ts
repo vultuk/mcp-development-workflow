@@ -200,6 +200,8 @@ export class MyMCP extends McpAgent {
 
 				const allIssues: any[] = [];
 				let page = 1;
+				let hasMorePages = false;
+				let totalAvailable: number | null = null;
 				const resultsPerPage = Math.min(per_page, 100);
 
 				try {
@@ -244,51 +246,60 @@ export class MyMCP extends McpAgent {
 						const issues = (await response.json()) as any[];
 						allIssues.push(...issues);
 
+						// Parse Link header to check for more pages
+						const linkHeader = response.headers.get("Link");
+						hasMorePages = linkHeader ? linkHeader.includes('rel="next"') : false;
+
+						// Try to extract total count from last page link
+						if (linkHeader && totalAvailable === null) {
+							const lastMatch = linkHeader.match(/page=(\d+)>; rel="last"/);
+							if (lastMatch) {
+								totalAvailable = parseInt(lastMatch[1]) * resultsPerPage;
+							}
+						}
+
 						// Check if we've reached the desired number of results
 						if (max_results && allIssues.length >= max_results) {
 							allIssues.splice(max_results);
+							hasMorePages = true; // There might be more beyond our limit
 							break;
 						}
 
 						// Check if there are more pages
-						const linkHeader = response.headers.get("Link");
-						if (
-							!linkHeader ||
-							!linkHeader.includes('rel="next"') ||
-							issues.length < resultsPerPage
-						) {
+						if (!hasMorePages || issues.length < resultsPerPage) {
 							break;
 						}
 
 						page++;
 					}
 
-					// Format the results
-					const formattedIssues = allIssues.map((issue) => ({
-						number: issue.number,
-						title: issue.title,
-						state: issue.state,
-						url: issue.html_url,
-						created_at: issue.created_at,
-						updated_at: issue.updated_at,
-						assignees: issue.assignees?.map((a: any) => a.login) || [],
-						labels: issue.labels?.map((l: any) => l.name) || [],
-						is_pull_request: !!issue.pull_request,
-					}));
-
-					const summary = `Found ${formattedIssues.length} issue(s) in ${owner}/${repo}`;
-					const issueList = formattedIssues
-						.map(
-							(issue) =>
-								`#${issue.number}: ${issue.title} [${issue.state}]${issue.is_pull_request ? " (PR)" : ""}`,
-						)
+					// Format the results - only ID, title, and state
+					const formattedIssues = allIssues
+						.map((issue) => `#${issue.number}: ${issue.title} [${issue.state}]`)
 						.join("\n");
+
+					// Build pagination info
+					let paginationInfo = "";
+					if (hasMorePages) {
+						paginationInfo = "\n\n📄 More results available. ";
+						if (max_results) {
+							paginationInfo += `Showing first ${allIssues.length} results (limited by max_results).`;
+						} else {
+							paginationInfo += `Use max_results parameter to limit results or increase per_page.`;
+						}
+					}
+
+					if (totalAvailable && !max_results) {
+						paginationInfo += ` Estimated total: ~${totalAvailable} issues.`;
+					}
+
+					const summary = `Found ${allIssues.length} issue(s) in ${owner}/${repo}`;
 
 					return {
 						content: [
 							{
 								type: "text",
-								text: `${summary}\n\n${issueList}\n\nDetailed results:\n${JSON.stringify(formattedIssues, null, 2)}`,
+								text: `${summary}\n\n${formattedIssues}${paginationInfo}`,
 							},
 						],
 					};
