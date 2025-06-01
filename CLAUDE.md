@@ -50,6 +50,7 @@ The project uses a Durable Object pattern with the following structure:
   - Server name: "GitHub Issues MCP Server"
   - Version: "1.0.0"
   - Defines tools using `this.server.tool()` method in the `init()` function
+  - Implements 6 GitHub tools for comprehensive repository and issue management
 
 ### Request Handling
 
@@ -145,6 +146,24 @@ Lists organizations for the authenticated user.
 **Returns:** 
 - Organization login names and descriptions
 - Detailed organization data including URLs, repository counts, and timestamps
+- Pagination information for multiple pages
+
+### 6. `list_github_repositories`
+Lists repositories for a specified organization.
+
+**Parameters:**
+- `org` (string, required): Organization name
+- `type` (enum: "all", "public", "private", "forks", "sources", "member", optional): Type of repositories (default: "all")
+- `sort` (enum: "created", "updated", "pushed", "full_name", optional): Sort field (default: "created")
+- `direction` (enum: "asc", "desc", optional): Sort direction
+- `per_page` (number, optional): Results per page, 1-100 (default: 30)
+- `page` (number, optional): Page number to retrieve (default: 1)
+
+**Returns:**
+- Repository names with visibility indicators (🔒 private, 📂 public)
+- Repository descriptions, language, and archived status
+- Statistics: stars, forks, and open issues count
+- Detailed repository data including URLs, topics, and metadata
 - Pagination information for multiple pages
 
 ## Environment Variables
