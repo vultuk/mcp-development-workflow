@@ -39,11 +39,12 @@ The project uses a Durable Object pattern with the following structure:
 
 - **MyMCP** (src/index.ts): Main MCP agent class that extends `McpAgent` from the `agents` package
   - Defines tools using `this.server.tool()` method in the `init()` function
-  - Currently implements GitHub issue management tools:
+  - Currently implements GitHub tools:
     - `create_github_issue`: Create new issues
     - `list_github_issues`: List repository issues with pagination
     - `get_github_issue`: Get full details of a specific issue
     - `update_github_issue`: Update existing issues
+    - `get_github_organisations`: List organizations for the authenticated user
   
 - **Request Handling**: The default export handles HTTP requests with two main endpoints:
   - `/sse` and `/sse/message`: Serves SSE connections for remote MCP clients
