@@ -7,14 +7,10 @@
 	"name": "mcp-development-workflow",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-03-10",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
+	"compatibility_flags": ["nodejs_compat"],
 	"migrations": [
 		{
-			"new_sqlite_classes": [
-				"MyMCP"
-			],
+			"new_sqlite_classes": ["MyMCP"],
 			"tag": "v1"
 		}
 	],
@@ -50,6 +46,7 @@
 	/**
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
+	 * For the GITHUB_AUTH_TOKEN, use: wrangler secret put GITHUB_AUTH_TOKEN
 	 */
 
 	/**
