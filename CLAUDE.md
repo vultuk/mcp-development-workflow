@@ -39,7 +39,9 @@ The project uses a Durable Object pattern with the following structure:
 
 - **MyMCP** (src/index.ts): Main MCP agent class that extends `McpAgent` from the `agents` package
   - Defines tools using `this.server.tool()` method in the `init()` function
-  - Currently implements calculator tools (add, calculate)
+  - Currently implements:
+    - Calculator tools (add, calculate)
+    - GitHub tools (create_github_issue, list_github_issues)
   
 - **Request Handling**: The default export handles HTTP requests with two main endpoints:
   - `/sse` and `/sse/message`: Serves SSE connections for remote MCP clients
