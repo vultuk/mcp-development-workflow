@@ -15,6 +15,7 @@ import {
 	listGithubRepositoriesSchema,
 	listGithubRepositoriesHandler,
 } from "./tools/index.js";
+import { createTicketPromptSchema, createTicketPromptHandler } from "./prompts/index.js";
 
 // Define our MCP agent with tools
 export class MyMCP extends McpAgent {
@@ -77,6 +78,16 @@ export class MyMCP extends McpAgent {
 			async (params, extra) => {
 				const env = (this as any).env as Env;
 				return listGithubRepositoriesHandler(params, { server: this.server, env });
+			},
+		);
+
+		// Create ticket prompt
+		this.server.prompt(
+			"create-ticket",
+			"Generate a well-structured GitHub issue for features, bugs, or tasks",
+			createTicketPromptSchema.shape,
+			async (params) => {
+				return createTicketPromptHandler(params);
 			},
 		);
 	}

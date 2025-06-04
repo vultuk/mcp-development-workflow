@@ -166,6 +166,23 @@ Lists repositories for a specified organization.
 - Detailed repository data including URLs, topics, and metadata
 - Pagination information for multiple pages
 
+## Available Prompts
+
+### 1. `create-ticket`
+Generates a well-structured GitHub issue for features, bugs, or tasks using a specialized IssueBot prompt.
+
+**Parameters:**
+- `rough_details` (string, optional): Optional rough details for the issue to be created
+
+**Returns:** A formatted prompt that guides the AI to:
+- Ask clarifying questions if essential details are missing
+- Generate a GitHub issue in pure Markdown with:
+  - Title (imperative, ≤ 60 characters)
+  - Tag (Feature, Bug, or Task)
+  - Brief introduction (1-2 sentences)
+  - Detailed description
+  - Requirements as checklist items
+
 ## Environment Variables
 
 ### GitHub Authentication
